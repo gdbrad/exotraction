@@ -3,8 +3,8 @@ import numpy as np
 import os
 import argparse
 import datetime
-from ingest_data_gb import load_elemental, load_peram, reverse_perambulator_time
-import gamma_gb as gamma
+from ingest_data import load_elemental, load_peram, reverse_perambulator_time
+import gamma as gamma
 
 def process_configuration(cfg_id, num_vecs, num_tsrcs, peram_dir, meson_dir,disp, Lt, h5_group, show_plot=False):
     peram_file = None

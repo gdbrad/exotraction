@@ -15,9 +15,9 @@ import argparse
 import h5py 
 import matplotlib.pyplot as plt
 from contract_gb import contract_pion_t, contract_vector_t
-from ingest_data import load_elemental, load_peram, reverse_perambulator_time
+from ingest_data_gb import load_elemental, load_peram, reverse_perambulator_time
 import h5_utils
-import gamma as gamma
+import gamma_gb as gamma
 
 def get_elemental(meson_file, Lt, num_vecs, mom:str, disp:str):
     meson_elemental = load_elemental(meson_file, Lt, num_vecs, mom=mom, disp=disp)

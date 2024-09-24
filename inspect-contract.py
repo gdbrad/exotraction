@@ -1,4 +1,5 @@
 # Some Sanity checks...
+import numpy as np 
 print(np.sum(np.abs(prop[0, :, :, :, :, :] - prop1)))
 print(np.sum(np.abs(prop_back[0, :, :, :, :, :] - prop_back1)))
 print(np.sum(np.abs(meson[:, mom_keys_inv['mom_0_0_0'], disp_keys_inv['disp'], :, :] - meson1)))

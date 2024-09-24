@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "exotraction"
+version = "0.1.0"
+description = ""
+authors = ["Grant Bradley <g.bradley@fz-juelich.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^2.1.1"
+h5py = "^3.11.0"
+argparse = "^1.4.0"
+typing = "^3.10.0.0"
+pathlib = "^1.0.1"
+sympy = "^1.13.3"
+einsum = "^0.3.0"
+opt-einsum = "^3.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

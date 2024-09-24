@@ -3,7 +3,7 @@ import numpy as np
 import os 
 from typing import Iterable,List,Dict,Union
 from pathlib import Path
-from gamma import gamma
+from gamma_gb import gamma
 
 def contract_pion_t(t: int, meson_elemental: np.ndarray, prop: np.ndarray, prop_back: np.ndarray, gamma: dict[int, np.ndarray]) -> np.cdouble:
     phi_0 = np.einsum("ij,ab->ijab", gamma[5], meson_elemental[0])
