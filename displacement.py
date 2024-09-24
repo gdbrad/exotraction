@@ -68,6 +68,13 @@ deriv_scheme = {
         [[1, 7], [1, 5]],  # dxdy+dydx
     ],}
 
+deriv_names = {
+    IDEN:
+    NABLA:
+    B:
+    D: 
+}
+
 
 print(output([1,11]))
 print(derivative(3))

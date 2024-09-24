@@ -1,12 +1,47 @@
 import h5py
 import numpy as np
+from typing import List,Dict 
 import os
 import argparse
 import datetime
 from ingest_data import load_elemental, load_peram, reverse_perambulator_time
 import gamma as gamma
+import displacement import deriv_names
 
-def process_configuration(cfg_id, num_vecs, num_tsrcs, peram_dir, meson_dir,disp, Lt, h5_group, show_plot=False):
+Insertion = {}
+Insertion['pixnabla_T1']= {'gamma':gamma.gamma[5],
+                           'deriv':deriv_names.nabla,
+                           'projection': 'T1',
+                           'mom':}
+Insertion['pixD_T2'] = {'gamma':gamma.gamma[5] @ gamma.gamma[4],
+                           'deriv':deriv_names.D,
+                           'projection': 'T2',
+                           'mom':}
+
+Insertion['pixB_T1'] = {'gamma':gamma.gamma[5] @ gamma.gamma[4],
+                           'deriv':deriv_names.B,
+                           'projection': 'T1',
+                           'mom':}
+
+def operator_displacement(name:str,
+                          disp:List[int]
+                          src:bool,
+                          snk:bool):
+     properties = Insertion[name]
+    if len(disp)==1:
+        
+     
+
+def contract_displacement(
+        cfg_id, num_vecs:int,
+        num_tsrcs:int,
+        peram_dir, 
+        meson_dir,
+        disp:List[str],
+        Lt:int,
+        h5_group, 
+        show_plot=False):
+    
     peram_file = None
     peram_filename = f"peram_{num_vecs}_cfg{cfg_id}.h5"
     for file in os.listdir(peram_dir):
@@ -32,17 +67,23 @@ def process_configuration(cfg_id, num_vecs, num_tsrcs, peram_dir, meson_dir,disp
     print(f"Reading meson elementals file: {meson_file}")
     
     # Load perambulator and meson elemental
+    # covariant derivative operator does not touch perambulator at this stage
     peram = load_peram(peram_file, Lt, num_vecs, num_tsrcs)
-    meson_elemental = load_elemental(meson_file, Lt, num_vecs, mom='mom_0_0_0', disp=disp)
     peram_back = reverse_perambulator_time(peram)
     pion = np.zeros(Lt, dtype=np.cdouble)  # Shape (96, 200) for each tsrc
+    meson_elemental = load_elemental(meson_file, Lt, num_vecs, mom='mom_0_0_0', disp=disp)
+
     phi_0 = np.einsum("ij,ab->ijab", gamma.gamma[5], meson_elemental[0])
 
     for tsrc in range(num_tsrcs):
         for t in range(Lt):
-            phi_t = np.einsum("ij,ab->ijab", gamma.gamma[5], meson_elemental[t], optimize='optimal')
             tau = peram[tsrc, t, :, :, :, :]
             tau_ = peram_back[tsrc, t, :, :, :, :]
+            for _src in src:
+                for _snk in snk:
+
+            phi_t = np.einsum("ij,ab->ijab", gamma.gamma[5], meson_elemental[t], optimize='optimal')
+
             # Contract pion, assuming the 200 dimension comes from an appropriate contraction of indices
             contracted_result = np.einsum("ijab,jkbc,klcd,lida", phi_t, tau, phi_0, tau_, optimize='optimal')
             
