@@ -14,27 +14,6 @@ gauge covariant spatial derivatives are combined with a gamma matrix within a fe
 '''
 
 from typing import List 
-def output(deriv_coeff_index):
-    c, n = deriv_coeff_index
-    assert isinstance(n, int) and n >= 0
-    d = ["dx", "dy", "dz"]
-    ret = []
-    num = -1
-    while n >= 0:
-        num += 1
-        n = n - pow(3, num)
-    n = n + pow(3, num)
-    for _ in range(num):
-        ret.append(d[n % 3])
-        n = n // 3
-    if c == 1:
-        pass
-    elif c == -1:
-        ret.insert(0, "-")
-    else:
-        ret.insert(0, str(c))
-    return "".join(ret)
-
 def derivative(n: int):
     ret = []
     num = -1
@@ -68,46 +47,61 @@ deriv_scheme = {
         [[1, 7], [1, 5]],  # dxdy+dydx
     ],}
 
-deriv_names = {
-    IDEN:
-    NABLA:
-    B:
-    D: 
-}
+class deriv_names:
+    IDEN =  ""
+    NABLA =  R"$\nabla$"
+    B = R"$\mathbb{B}$"
+    D = R"$\mathbb{D}$"
+
+
+def displacement_map(disp:str):
+    '''displacement directions from right and left '''
+    dist_src_snk = List()
+    if disp == 'disp':
+        dist_src_snk = [0]
+    elif disp == 'disp_1':
+        dist_src_snk = [1,0]
+
+    elif disp =='disp_1_1':
+        dist_src_snk = [1, 1]
+
+    elif disp == 'disp_1_2':
+        dist_src_snk = [1, 2]
+
+    elif disp == 'disp_1_3':
+        dist_src_snk = [1, 3]
+
+    elif disp == 'disp_2':
+        dist_src_snk = [2, 0]
+
+    elif disp == 'disp_2_1':
+        dist_src_snk = [2, 1]
+
+    elif disp == 'disp_2_2':
+        dist_src_snk = [2, 2]
+
+    elif disp == 'disp_2_3':
+        dist_src_snk = [2 ,3]
+
+    elif disp == 'disp_3':
+        dist_src_snk = [3, 0]
+
+    elif disp == 'disp_3_1':
+        dist_src_snk = [3, 1]
+
+    elif disp == 'disp_3_2':
+        dist_src_snk = [3, 2]
+
+    elif disp == 'disp_3_3':
+        dist_src_snk = [3, 3]
+
 
 
 print(output([1,11]))
 print(derivative(3))
 
-def make_operator(
-        name: str,
-        row: list,
-        coeffs: List[float]
-):
-    '''insert name 
-    row of irrep 
-    CG coeffs 
-    '''
-    pass 
 # Construct pion interpolators at src and snk 
 # this gets passed to the contraction which forms the 2 pt correlator
-pi_A1 = Insertion(GammaName.PI, DerivativeName.IDEN, ProjectionName.A1, momentum_dict)
-print(pi_A1[0])
-op_pi = Operator("pi", [pi_A1[0](0, 0, 0)], [1])
-
-pixnabla_T1 = Insertion(GammaName.PI, DerivativeName.NABLA, ProjectionName.T1, momentum_dict)
-print(pixnabla_T1[0])
-
-pixD_T2 = Insertion(GammaName.PI, DerivativeName.D, ProjectionName.T2, momentum_dict)
-print(pixD_T2[0])
-
-pixB_T1 = Insertion(GammaName.PI, DerivativeName.T1, ProjectionName.T1, momentum_dict)
-print(pixB_T1[0])
-
-
-
-
-op_pi2 = Operator("pi2", [pi_A1[0](0, 0, 0), b1xnabla_A1[0](0, 0, 0)], [3, 1])
 
 # pi_src =
 # pi_snk =

@@ -6,37 +6,69 @@ import argparse
 import datetime
 from ingest_data import load_elemental, load_peram, reverse_perambulator_time
 import gamma as gamma
-import displacement import deriv_names
+from displacement import displacement_map
+from displacement import deriv_names
+
 
 Insertion = {}
+# pion operator with no derivative operators 
+Insertion['pi_A1'] = {'gamma':gamma.gamma[5],
+                           'deriv':deriv_names.IDEN,
+                           'projection': 'A1',
+                           'mom':'mom_0_0_0'}
+# pion operators with a lattice derivative operator 
+# naming: gamma_structre x deriv operator _ O_h irrep 
+
 Insertion['pixnabla_T1']= {'gamma':gamma.gamma[5],
                            'deriv':deriv_names.nabla,
                            'projection': 'T1',
-                           'mom':}
+                           'mom':'mom_0_0_0'}
 Insertion['pixD_T2'] = {'gamma':gamma.gamma[5] @ gamma.gamma[4],
                            'deriv':deriv_names.D,
                            'projection': 'T2',
-                           'mom':}
+                           'mom':'mom_0_0_0'}
 
-Insertion['pixB_T1'] = {'gamma':gamma.gamma[5] @ gamma.gamma[4],
+Insertion['pixB_T1'] = {'gamma':gamma.gamma[5],
                            'deriv':deriv_names.B,
                            'projection': 'T1',
-                           'mom':}
+                           'mom':'mom_0_0_0'}
+
+def displace(disp,u,F,length,mu):
+    '''returns sign and coeff'''
+    deriv_type = str()
+    mu = displacement_map(disp)
+    if mu[0]!=mu[1]:
+        assert deriv_type=='mixed'
+
 
 def operator_displacement(name:str,
-                          disp:List[int]
+                          disp:List[int],
                           src:bool,
-                          snk:bool):
-     properties = Insertion[name]
+                          snk:bool,
+                          length=1):
+    '''O (deriv operator) x gamma construction of a meson operator'''
+    ins = Insertion[name]
     if len(disp)==1:
+        # length is always = 1
+        deriv_operator == ins['deriv']
+
+        displacement(u, F, length, mu) - displacement(u, F, -length, mu)
+
+        # apply first derivative to the right onto src 
+
+
+        
+        
         
      
 
 def contract_displacement(
-        cfg_id, num_vecs:int,
+        cfg_id,
+        num_vecs:int,
         num_tsrcs:int,
         peram_dir, 
         meson_dir,
+        op_name: List[str],
         disp:List[str],
         Lt:int,
         h5_group, 
@@ -67,29 +99,39 @@ def contract_displacement(
     print(f"Reading meson elementals file: {meson_file}")
     
     # Load perambulator and meson elemental
-    # covariant derivative operator does not touch perambulator at this stage
+    # Once the τ have been computed and stored, the correlation
+    # of any source and sink operators can be computed a posteriori.
+    nop = len(op_name)
+    pion = np.zeros(Lt,nop, dtype=np.cdouble)  # Shape (96, 200) for each tsrc
     peram = load_peram(peram_file, Lt, num_vecs, num_tsrcs)
     peram_back = reverse_perambulator_time(peram)
-    pion = np.zeros(Lt, dtype=np.cdouble)  # Shape (96, 200) for each tsrc
-    meson_elemental = load_elemental(meson_file, Lt, num_vecs, mom='mom_0_0_0', disp=disp)
-
-    phi_0 = np.einsum("ij,ab->ijab", gamma.gamma[5], meson_elemental[0])
-
     for tsrc in range(num_tsrcs):
         for t in range(Lt):
             tau = peram[tsrc, t, :, :, :, :]
             tau_ = peram_back[tsrc, t, :, :, :, :]
-            for _src in src:
-                for _snk in snk:
+            # now loop over displacements
+            for _disp in disp:
+                meson_elemental = load_elemental(meson_file, Lt, num_vecs, mom='mom_0_0_0', disp=_disp)
+                # construct right source with covariant derivative operator eg. nabla,B,D
+                _ins = Insertion[op_name]
+                phi_0 = np.einsum("ij,ab->ijab", _ins['gamma'], meson_elemental[0])
+                for _src in range(nop):
+                    for _snk in range(nop):
+                        phi_src = phi_0[_src]
+                        # apply first right derivative nabla 
+                        if len(disp==1):
+                            gamma_src = np.einsum("ij,xkj,kl->xil", gamma.gamma[4]@ gamma.gamma[5], phi_src[0].conj(), gamma.gamma[4]@ gamma.gamma[5])
+                        phi[0] = operator_displacement(disp=disp)
+                        if len(disp==2):
 
-            phi_t = np.einsum("ij,ab->ijab", gamma.gamma[5], meson_elemental[t], optimize='optimal')
+                        phi_t = np.einsum("ij,ab->ijab", gamma.gamma[4]@ gamma.gamma[5], meson_elemental[t], optimize='optimal')
 
-            # Contract pion, assuming the 200 dimension comes from an appropriate contraction of indices
-            contracted_result = np.einsum("ijab,jkbc,klcd,lida", phi_t, tau, phi_0, tau_, optimize='optimal')
-            
-            # Store the contracted result in the pion array (Lt, 200)
-            pion[t] = contracted_result  # Ensure this matches the dimension of 200.
-
+                        contracted_result = np.einsum("ijab,jkbc,klcd,lida", phi_t, tau, phi_0, tau_, optimize='optimal')
+                        
+                        # Store the contracted result in the pion array (Lt, 200)
+                        pion[t] = contracted_result
+        
+        
         pion = pion.real
         h5_group.create_dataset(f'tsrc_{tsrc}/cfg_{cfg_id}', data=pion)
 
@@ -107,6 +149,12 @@ def main(cfg_ids, num_vecs, num_tsrcs,disp, task_id,show_plot=False):
     Lt = 96  
     peram_dir = os.path.join(h5_path, 'perams_sdb', f'numvec{num_vecs}', f'tsrc-{num_tsrcs}')
     meson_dir = os.path.join(h5_path, 'meson_sdb', f'numvec{num_vecs}')
+
+
+
+    #return 2pt corr matrix 
+    twopt_matrix = contract_displacement(cfg_ids,num_vecs,num_tsrcs,[op_pi, op_pi2], meson_dir, peram_dir, list(range(128)), 128)
+    twopt_matrix = twopt_matrix.real
 
     h5_output_file = f'pion_2pt_nvec_{num_vecs}_tsrc_{num_tsrcs}_task{task_id}.h5'
     with h5py.File(h5_output_file, "w") as h5f:

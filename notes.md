@@ -32,7 +32,9 @@ disp_3_2                 Group
 disp_3_3                 Group
 ```
 * construct the (right Nabla) source 
+$\nabla_\mu f(x) = U_\mu(x)f(x+\mu) - U_{-\mu}(x)f(x-\mu)$
 
+$\nabla_\mu F(x)$
     The sink interpolator structure is
     $\Gamma_f \equiv \nabla_i$
 
@@ -78,3 +80,12 @@ disp_3_3                 Group
     The sink interpolator is   
 
     $\Gamma_f \equiv \gamma_5 B_i$  
+
+## mixed gamma operators 
+
+build correlation matrix with multiple gamma operators 
+
+build a 2x2 correlation matrix with both operators gamma_i, nabla_i
+
+derivative based gamma operators result in elementals no longer diagonal in distillation space 
+
