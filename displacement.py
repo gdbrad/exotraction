@@ -12,6 +12,16 @@ gauge covariant spatial derivatives are combined with a gamma matrix within a fe
 
 
 '''
+from dataclasses import dataclass
+@dataclass
+class DispGammaMom:
+    gamma =           int         ## The gamma matrix for this  displacement
+    displacement =    List[int]    ## The displacement path for this gamma
+    mom =             Mom_t       ## Array of momenta to generate 
+
+def disp_gamma_mom():
+
+
 
 from typing import List 
 def derivative(n: int):

@@ -14,7 +14,7 @@ import h5_utils
 from gamma import gamma
 from contract import contract_pion_t, contract_vector_t
 # from ingest_data import load_elemental, load_peram, reverse_perambulator_time
-from ingest_data_gb import load_elemental, load_peram, reverse_perambulator_time
+from ingest_data import load_elemental, load_peram, reverse_perambulator_time
 
 h5_path = os.path.abspath(os.path.join('..','..','exolaunch'))
 
