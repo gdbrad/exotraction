@@ -103,6 +103,18 @@ def load_elemental(file: pathlib.Path | str, max_t: int, n_vecs: int, mom: str |
                     disp_data = mom_data[disp_keys[disp_idx]]
                     meson[t_slice_idx, mom_idx, disp_idx, :, :] = \
                         disp_data['real'][:] + disp_data['imag'][:] * 1j
+                    
+    elif not mom and disp:
+        meson = np.zeros((max_t, n_mom, n_vecs, n_vecs), dtype=np.cdouble)
+        for t_slice_idx in tqdm.trange(0, max_t, leave=False):
+            t_slice_data = meson_data[f't_slice_{t_slice_idx}']
+            for mom_idx in range(0, 19):
+                mom_data = t_slice_data[mom_keys[mom_idx]]
+                disp_data = mom_data[disp]
+                meson[t_slice_idx, mom_idx, :, :] = \
+                    disp_data['real'][:] + disp_data['imag'][:] * 1j
+
+
     elif mom and disp:
         meson = np.zeros((max_t, n_vecs, n_vecs), dtype=np.cdouble)
         for t_slice_idx in tqdm.trange(0, max_t, leave=False):

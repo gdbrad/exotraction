@@ -14,12 +14,19 @@ gauge covariant spatial derivatives are combined with a gamma matrix within a fe
 '''
 from dataclasses import dataclass
 @dataclass
-class DispGammaMom:
+class InsertionOperator:
+    '''
+    Houses all operator information into mom/disp/gamma structure 
+    gamma: single or list 
+    disp: null vector, 1-tuple, 2-tuple -> displacement three vector; apply covariant derivative operator in a specified spatial direction 
+    LOOK UP CHROMA CONVENTION FOR THIS ^ i think disp_1: disp(1,0,0)
+    mom: List of 3-tuples 
+    '''
     gamma =           int         ## The gamma matrix for this  displacement
     displacement =    List[int]    ## The displacement path for this gamma
     mom =             Mom_t       ## Array of momenta to generate 
 
-def disp_gamma_mom():
+# def disp_gamma_mom():
 
 
 

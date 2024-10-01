@@ -1,4 +1,5 @@
 import numpy as np 
+import pprint
 
 sigma: dict[int, np.ndarray] = {}
 gamma: dict[int, np.ndarray] = {}
@@ -29,28 +30,7 @@ gamma[4][2:, :2] = I
 
 gamma[5] = gamma[1] @ gamma[2] @ gamma[3] @ gamma[4]
 
-class DiracPauli:
-    def __init__(self) -> None:
-        self.g1 = np.array(
-            [[0, 0, 0, -1j],
-            [0, 0, -1j, 0],
-            [0, 1j, 0, 0],
-            [1j, 0, 0, 0]])
-        self.g2 = np.array(
-            [[0, 0, 0, -1],
-            [0, 0, 1, 0],
-            [0, 1, 0, 0],
-            [-1, 0, 0, 0]])
-        self.g3 = np.array(
-            [[0, 0, -1j, 0],
-            [0, 0, 0, 1j],
-            [1j, 0, 0, 0],
-            [0, -1j, 0, 0]])
-        self.g4 = np.array(
-            [[1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, -1, 0],
-            [0, 0, 0, -1]])
-        self.g5 = self.g1 @ self.g2 @ self.g3 @ self.g4
+print(gamma) 
 
-print(gamma)
+
+

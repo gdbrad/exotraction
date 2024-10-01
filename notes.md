@@ -74,7 +74,7 @@ $\nabla_\mu F(x)$
     The sink interpolator is   
     $\Gamma_f \equiv \gamma_4\gamma_5 D_i$  
 
-* Construct (PionxB_T1) source
+* Construct 5 source
 
     Operator is  pion x B_T1
     The sink interpolator is   
